@@ -15,7 +15,7 @@ pub trait Logger{
     fn log<S: Into<String>>(&self,buf: S);
 }
 pub struct PatchFixer<LogProvider: Logger>{
-    logger: LogProvider
+    pub logger: LogProvider
 }
 
 macro_rules! log {
