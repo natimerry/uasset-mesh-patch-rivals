@@ -4,7 +4,6 @@ use std::fs::OpenOptions;
 use std::io;
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::PathBuf;
-use colored::Colorize;
 
 static mut BULK_OFFSET: usize = 0;
 const UASSET_MAGIC: usize = 0x9E2A83C1;
@@ -272,7 +271,7 @@ impl<LogProvider: Logger> PatchFixer<LogProvider> {
         }
         
         if !found {
-            print!("{}", "\tNo suitable materials found... ".red());
+            print!("{}", "\tNo suitable materials found... ");
             if file_name.contains("Skeleton")
                 || file_name.contains("Physics")
                 || file_name.contains("Anim")
@@ -281,7 +280,7 @@ impl<LogProvider: Logger> PatchFixer<LogProvider> {
                 || !file_name.contains("SK_")
             // if we fail to patch and it isnt a SK_ mod, we can probably skip it without issues
             {
-                log!(self.logger,"{}", "but we can try skipping this!".green());
+                log!(self.logger,"{}", "but we can try skipping this!");
                 return Err(std::io::Error::new(std::io::ErrorKind::Other, "Skip this"));
             }
             return Err(std::io::Error::new(
@@ -289,7 +288,7 @@ impl<LogProvider: Logger> PatchFixer<LogProvider> {
                 "invalid mesh provided".to_string(),
             ));
         }
-        log!(self.logger,"{} {:1X}", "\t\tFound data at Offset: ".green(), r.stream_position()?);
+        log!(self.logger,"{} {:1X}", "\t\tFound data at Offset: ", r.stream_position()?);
         let ending_pos = r.stream_position()?;
     
         r.seek(SeekFrom::Start(starting_pos))?;
@@ -297,7 +296,7 @@ impl<LogProvider: Logger> PatchFixer<LogProvider> {
         r.read_exact(&mut buffer)?;
         o.write_all(&buffer)?;
     
-        log!(self.logger,"\tFound {} materials", material_count.to_string().bright_yellow());
+        log!(self.logger,"\tFound {} materials", material_count.to_string());
     
         for _ in 0..material_count {
             let mut buffer = vec![0; 40];
@@ -336,7 +335,7 @@ impl<LogProvider: Logger> PatchFixer<LogProvider> {
         f.write_i64::<LittleEndian>(fixed_offset)?;
         f.flush()?;
     
-        println!("{}", "\tAsset Cleaning Complete!".green());
+        println!("{}", "\tAsset Cleaning Complete!");
         Ok(())
     }
 }
