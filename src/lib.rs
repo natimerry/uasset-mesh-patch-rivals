@@ -297,12 +297,18 @@ impl<LogProvider: Logger> PatchFixer<LogProvider> {
         o.write_all(&buffer)?;
     
         log!(self.logger,"\tFound {} materials", material_count.to_string());
-    
+
+
         for _ in 0..material_count {
             let mut buffer = vec![0; 40];
             r.read_exact(&mut buffer)?;
             o.write_all(&buffer)?;
-            o.write_all(&[0x0, 0x0, 0x0, 0x0])?;
+            // Peek 4 bytes and ensure they're null before skipping them
+            let mut null_check = [0; 4];
+            r.read_exact(&mut null_check)?;
+            if null_check != [0x0, 0x0, 0x0, 0x0] {
+                return Err(io::Error::new(io::ErrorKind::InvalidData, "Expected null padding not found"));
+            }
         }
     
         let mut buffer = Vec::new();
